@@ -1,0 +1,3070 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantitative &amp; Volume Fuel Analyzer</title>
+  <meta name="description"
+    content="Professional Quantitative &amp; Volume Fuel Analyzer — Real-time volatility and volume trading dashboard">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Surface & Typography (Light Natural Theme) */
+      --bg-base: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --bg-input: #FFFFFF;
+
+      /* Primary Blue Palette */
+      --blue-primary: #0284C7;
+      --blue-dark: #0369A1;
+      --blue-light: #F0F9FF;
+      --blue-border: #BAE6FD;
+
+      /* Borders & Focus */
+      --border-light: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --border-focus: #0284C7;
+
+      /* Typography */
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+
+      /* Bars & Tracks (Light Theme: Dark Toned Tracks) */
+      --track-bg: #CBD5E1;
+      --track-border: #94A3B8;
+
+      /* Functional Indicators */
+      --emerald: #059669;
+      --emerald-light: #ECFDF5;
+      --emerald-border: #A7F3D0;
+      --emerald-text: #047857;
+
+      --rose: #E11D48;
+      --rose-light: #FFF1F2;
+      --rose-border: #FECDD3;
+      --rose-text: #BE123C;
+
+      --amber: #D97706;
+      --amber-light: #FFFBEB;
+      --amber-border: #FDE68A;
+      --amber-text: #B45309;
+
+      --slate: #475569;
+
+      /* Shadows */
+      --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.03);
+      --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+
+      /* Border Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      /* Transitions */
+      --transition-fast: all .15s ease;
+      --transition-md: all .25s ease;
+    }
+
+    /* ===== DARK MODE (Pure #000000 Black Background, Bright Toned Bars) ===== */
+    :root.dark {
+      --bg-base: #000000;
+      --bg-surface: #111111;
+      --bg-subtle: #1A1A1A;
+      --bg-input: #161616;
+
+      --blue-primary: #38BDF8;
+      --blue-dark: #7DD3FC;
+      --blue-light: #172554;
+      --blue-border: #1E3A8A;
+
+      --border-light: #262626;
+      --border-strong: #404040;
+      --border-focus: #38BDF8;
+
+      --text-primary: #FFFFFF;
+      --text-secondary: #A3A3A3;
+      --text-muted: #737373;
+
+      /* Bars & Tracks (Dark Theme: Bright Toned Tracks) */
+      --track-bg: #262626;
+      --track-border: #404040;
+
+      --emerald: #10B981;
+      --emerald-light: #022C22;
+      --emerald-border: #065F46;
+      --emerald-text: #34D399;
+
+      --rose: #F43F5E;
+      --rose-light: #4C0519;
+      --rose-border: #881337;
+      --rose-text: #FB7185;
+
+      --amber: #F59E0B;
+      --amber-light: #451A03;
+      --amber-border: #78350F;
+      --amber-text: #FCD34D;
+
+      --slate: #94A3B8;
+
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Kanit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 400;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background .3s ease, color .3s ease;
+    }
+
+    .app-wrapper {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'Kanit', sans-serif;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blue-light);
+      border: 1px solid var(--blue-border);
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-size: 12px;
+      color: var(--blue-dark);
+      font-weight: 500;
+      box-shadow: var(--shadow-xs);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--blue-primary);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 0 5px rgba(2, 132, 199, 0.05);
+      }
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      outline: none;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border-strong);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--blue-primary);
+      border-color: var(--blue-primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      border-color: var(--blue-dark);
+      color: #FFFFFF;
+    }
+
+    .btn-outline {
+      background: var(--bg-surface);
+      border-color: var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      background: var(--bg-subtle);
+    }
+
+    .btn-danger {
+      background: var(--bg-surface);
+      border-color: var(--border-light);
+      color: var(--rose-text);
+    }
+
+    .btn-danger:hover {
+      background: var(--rose-light);
+      border-color: var(--rose-border);
+    }
+
+    /* TOGGLE THEME BUTTON WITH IMAGE */
+    .theme-toggle-btn {
+      width: 44px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border-strong);
+    }
+
+    .toggle-icon-img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      transition: filter .3s ease, transform .3s ease;
+    }
+
+    :root.dark .toggle-icon-img {
+      filter: invert(1);
+    }
+
+    /* ===== SUMMARY ROW ===== */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    @media(max-width:960px) {
+      .summary-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:560px) {
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .summary-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-top: 3px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition-md);
+    }
+
+    .summary-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .summary-card.active-green {
+      border-top-color: var(--emerald);
+    }
+
+    .summary-card.active-red {
+      border-top-color: var(--rose);
+    }
+
+    .summary-card.active-blue {
+      border-top-color: var(--blue-primary);
+    }
+
+    .summary-card.active-amber {
+      border-top-color: var(--amber);
+    }
+
+    .summary-card.invalid-state {
+      border-top-color: var(--rose);
+    }
+
+    .sc-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .sc-value {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      line-height: 1.1;
+      color: var(--text-primary);
+      transition: color .2s;
+    }
+
+    .sc-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 400;
+    }
+
+    /* ===== MAIN GRID ===== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 400px) 1fr;
+      gap: 24px;
+    }
+
+    @media(max-width:1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== PANELS ===== */
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      font-family: 'Kanit', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 3px solid var(--blue-primary);
+      padding-left: 10px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 18px 0;
+    }
+
+    /* ===== TOOLTIP ===== */
+    .help-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      flex-shrink: 0;
+      font-style: normal;
+      line-height: 1;
+      font-family: 'Kanit', sans-serif;
+      transition: var(--transition-fast);
+    }
+
+    .help-icon:hover {
+      background: var(--blue-light);
+      border-color: var(--blue-border);
+      color: var(--blue-dark);
+    }
+
+    .help-icon .tooltip-card {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 220px;
+      max-width: 280px;
+      background: var(--text-primary);
+      color: var(--bg-surface);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.6;
+      text-transform: none;
+      letter-spacing: 0;
+      z-index: 500;
+      box-shadow: var(--shadow-md);
+      white-space: normal;
+      pointer-events: none;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .help-icon .tooltip-card::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--text-primary);
+    }
+
+    .help-icon:hover .tooltip-card {
+      display: block;
+    }
+
+    /* ===== FORM TOOLBAR ===== */
+    .form-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .form-toolbar-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* SYMBOL SELECT */
+    .symbol-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .symbol-select-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    select.symbol-select {
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: 'Kanit', sans-serif;
+      cursor: pointer;
+      outline: none;
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition-fast);
+    }
+
+    select.symbol-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* ===== INPUTS ===== */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .input-grid.single {
+      grid-template-columns: 1fr;
+    }
+
+    @media(max-width:480px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-group {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-label-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .input-helper {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      line-height: 1.35;
+      font-weight: 400;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap .unit {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      pointer-events: none;
+      font-weight: 500;
+      background: var(--bg-subtle);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+
+    .input-wrap.has-unit input {
+      padding-right: 64px;
+    }
+
+    input[type="number"],
+    input[type="text"].num-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+      outline: none;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-xs);
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"].num-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* Fetch price button */
+    .price-fetch-wrap {
+      display: flex;
+      gap: 6px;
+      align-items: stretch;
+    }
+
+    .price-fetch-wrap input {
+      flex: 1;
+    }
+
+    .btn-fetch-price {
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--blue-border);
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      font-family: 'Kanit', sans-serif;
+      transition: var(--transition-fast);
+      outline: none;
+    }
+
+    .btn-fetch-price:hover {
+      background: var(--blue-primary);
+      color: #fff;
+      border-color: var(--blue-primary);
+    }
+
+    .btn-fetch-price:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Inline validation */
+    input.input-invalid {
+      border-color: var(--rose) !important;
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12) !important;
+      background: var(--rose-light);
+    }
+
+    .input-error-msg {
+      font-size: 11px;
+      color: var(--rose-text);
+      font-weight: 400;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .input-error-msg.show {
+      display: flex;
+    }
+
+    /* ===== COLLAPSIBLE ===== */
+    .collapsible-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      margin-top: 10px;
+    }
+
+    .collapsible-trigger:hover {
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      border-color: var(--blue-border);
+    }
+
+    .collapsible-arrow {
+      transition: transform .3s ease;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .collapsible-trigger.active .collapsible-arrow {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease-out, opacity .25s ease-out;
+      opacity: 0;
+    }
+
+    .collapsible-content.open {
+      max-height: 2000px;
+      opacity: 1;
+      margin-top: 16px;
+    }
+
+    /* ===== FUEL STATUS ===== */
+    .fuel-status-block {
+      border-radius: var(--radius-md);
+      padding: 18px;
+      text-align: center;
+      transition: all .3s ease;
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+    }
+
+    .fuel-status-block.on {
+      background: var(--emerald-light);
+      border-color: var(--emerald-border);
+    }
+
+    .fuel-status-block.off {
+      background: var(--bg-subtle);
+      border-color: var(--border-light);
+    }
+
+    .fuel-status-block.invalid {
+      background: var(--rose-light);
+      border-color: var(--rose-border);
+    }
+
+    .fuel-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .fuel-value {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      transition: color .2s;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .fuel-status-block.on .fuel-value {
+      color: var(--emerald-text);
+    }
+
+    .fuel-status-block.off .fuel-value {
+      color: var(--text-secondary);
+    }
+
+    .fuel-status-block.invalid .fuel-value {
+      color: var(--rose-text);
+    }
+
+    /* BARS / TRACKS CONTRAST ENHANCEMENTS */
+    .bar-track {
+      height: 8px;
+      background: var(--track-bg);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid var(--track-border);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width .5s ease, background .3s;
+    }
+
+    .bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+    }
+
+    /* ===== TRADE SIGNAL ===== */
+    .trade-signal-box {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      border: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+      transition: var(--transition-md);
+      margin-top: 10px;
+    }
+
+    .trade-signal-box.buy {
+      background: var(--emerald-light);
+      border-color: var(--emerald-border);
+    }
+
+    .trade-signal-box.buy .ts-signal-action {
+      color: var(--emerald-text);
+    }
+
+    .trade-signal-box.sell {
+      background: var(--rose-light);
+      border-color: var(--rose-border);
+    }
+
+    .trade-signal-box.sell .ts-signal-action {
+      color: var(--rose-text);
+    }
+
+    .trade-signal-box.neutral {
+      background: var(--amber-light);
+      border-color: var(--amber-border);
+    }
+
+    .trade-signal-box.neutral .ts-signal-action {
+      color: var(--amber-text);
+    }
+
+    .ts-signal-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 4px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .ts-signal-action {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .ts-signal-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .ts-metric-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ts-metric-row {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .ts-metric-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .ts-metric-value {
+      font-size: 13px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* ===== PLATFORM LINKS ===== */
+    .platform-links-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-platform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      text-decoration: none;
+      transition: var(--transition-fast);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn-tradingview {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0284C7;
+    }
+
+    .btn-tradingview:hover {
+      background: #0369A1;
+      border-color: #0369A1;
+      color: #FFFFFF;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-mt5 {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .btn-mt5:hover {
+      background: var(--bg-subtle);
+      border-color: var(--text-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ===== RESULTS ===== */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media(max-width:1150px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .result-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .result-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--rc-color, transparent);
+    }
+
+    .rc-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .rc-value {
+      font-size: 20px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      color: var(--rc-color, var(--text-primary));
+      line-height: 1.1;
+    }
+
+    .rc-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+    }
+
+    /* ===== ATR ROWS ===== */
+    .atr-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .atr-row:last-child {
+      border-bottom: none;
+    }
+
+    .atr-tf {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      width: 36px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .atr-bar-wrap {
+      flex: 1;
+      margin: 0 16px;
+    }
+
+    .atr-bar-track {
+      height: 8px;
+      background: var(--track-bg);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid var(--track-border);
+    }
+
+    .atr-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width .5s ease;
+    }
+
+    .atr-val {
+      font-size: 13px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 500;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* ===== SPARKLINE ===== */
+    .sparkline-panel {
+      margin-bottom: 12px;
+    }
+
+    .sparkline-wrap {
+      margin-top: 14px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sparkline-canvas {
+      display: block;
+      width: 100%;
+      height: 140px;
+    }
+
+    .sparkline-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .sparkline-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sparkline-legend-dot {
+      width: 10px;
+      height: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ===== LEVEL TABLE ===== */
+    .level-table-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .level-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .level-table th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .level-table td {
+      font-size: 13px;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .level-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .level-table tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .level-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .level-type-badge {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    /* ===== VOLATILITY MULTIPLIER RING ===== */
+    .vm-display {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .vm-ring {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 4px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      flex-shrink: 0;
+      transition: all .3s ease;
+      background: var(--bg-surface);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .vm-ring-val {
+      font-size: 20px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+
+    .vm-ring-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 3px;
+      font-weight: 400;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .vm-info {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg-subtle);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+
+    .vm-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .vm-info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .vm-info-label {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .vm-info-val {
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* ===== SD GAUGE ===== */
+    .sd-gauge-wrap {
+      margin-top: 14px;
+    }
+
+    .sd-track {
+      position: relative;
+      height: 10px;
+      background: var(--track-bg);
+      border-radius: var(--radius-full);
+      margin: 12px 0 8px;
+      border: 1px solid var(--track-border);
+    }
+
+    .sd-zones {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .sd-z1 {
+      flex: 1.5;
+      background: var(--blue-light);
+      border-right: 1px solid var(--blue-border);
+    }
+
+    .sd-z2 {
+      flex: 0.5;
+      background: var(--emerald-light);
+      border-right: 1px solid var(--emerald-border);
+    }
+
+    .sd-z3 {
+      flex: 0.6;
+      background: var(--amber-light);
+      border-right: 1px solid var(--amber-border);
+    }
+
+    .sd-z4 {
+      flex: 0.4;
+      background: var(--rose-light);
+    }
+
+    .sd-needle {
+      position: absolute;
+      top: -3px;
+      width: 6px;
+      height: 16px;
+      background: var(--text-primary);
+      border-radius: var(--radius-full);
+      transform: translateX(-50%);
+      transition: left .5s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .sd-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-weight: 400;
+    }
+
+    .sd-value-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .sd-big {
+      font-size: 26px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+
+    .sd-unit {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .sd-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      margin-top: 10px;
+      border: 1px solid transparent;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    /* ===== OVERPRICED GRID ===== */
+    .overpriced-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    @media(max-width:500px) {
+      .overpriced-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .op-cell {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      text-align: center;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .op-cell.active-zone {
+      border-color: var(--zone-color);
+      background: var(--zone-bg);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .op-cell-sd {
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+    }
+
+    .op-cell-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 3px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .op-active-indicator {
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 3px;
+      border-radius: 4px 4px 0 0;
+      background: var(--zone-color);
+      display: none;
+    }
+
+    .op-cell.active-zone .op-active-indicator {
+      display: block;
+    }
+
+    /* ===== MOMENTUM ===== */
+    .momentum-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .mom-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .mom-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .mom-val {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      color: var(--blue-dark);
+    }
+
+    /* ===== HISTORY LOG ===== */
+    .history-section {
+      margin-top: 24px;
+    }
+
+    .history-table-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .history-table th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .history-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .history-table tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .history-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .hb-buy {
+      background: var(--emerald-light);
+      color: var(--emerald-text);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .hb-sell {
+      background: var(--rose-light);
+      color: var(--rose-text);
+      border: 1px solid var(--rose-border);
+    }
+
+    .hb-neutral {
+      background: var(--amber-light);
+      color: var(--amber-text);
+      border: 1px solid var(--amber-border);
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .history-clear-btn {
+      font-size: 11px;
+      padding: 4px 10px;
+    }
+
+    /* ===== METHODOLOGY ===== */
+    .methodology-section {
+      margin-top: 24px;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media(max-width:768px) {
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .method-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .method-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .method-card-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      border: 1px solid var(--blue-border);
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .method-card-body {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .method-formula {
+      font-family: 'Kanit', 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-top: 8px;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 1000;
+      background: var(--text-primary);
+      border: 1px solid var(--text-primary);
+      box-shadow: var(--shadow-md);
+      border-radius: var(--radius-md);
+      padding: 14px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Kanit', sans-serif;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ===== UTILS ===== */
+    .mt-8 {
+      margin-top: 8px;
+    }
+
+    .mt-12 {
+      margin-top: 12px;
+    }
+
+    .mt-16 {
+      margin-top: 16px;
+    }
+
+    .mb-12 {
+      margin-bottom: 12px;
+    }
+
+    .text-green {
+      color: var(--emerald-text) !important;
+    }
+
+    .text-red {
+      color: var(--rose-text) !important;
+    }
+
+    .text-blue {
+      color: var(--blue-dark) !important;
+    }
+
+    .text-amber {
+      color: var(--amber-text) !important;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Kanit', sans-serif;
+      line-height: 1.8;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-wrapper">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-brand">
+        <div>
+          <div class="header-title">Quantitative &amp; Volume Fuel Analyzer</div>
+          <div class="header-subtitle">ATR Dynamic Levels · Volatility Structure · Momentum Engine</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle-btn" id="btnDark" onclick="toggleDark()" title="Toggle Dark/Light Mode">
+          <img src="image/dark-mode-alt.png" alt="Theme Toggle" class="toggle-icon-img">
+        </button>
+        <button class="btn btn-outline" id="btnShare" onclick="shareUrl()" title="คัดลอก URL พร้อมค่า Input ทั้งหมด">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          แชร์ Link
+        </button>
+        <button class="btn btn-primary" id="btnCopy" onclick="copyResults()" title="คัดลอกผลลัพธ์สรุปเพื่อนำไปใช้ต่อ">
+          คัดลอกผลลัพธ์
+        </button>
+        <div class="header-badge" title="คำนวณทันทีจากค่าที่คุณกรอก (Client-side Calculation)">
+          <div class="live-dot"></div>Live Calculation
+        </div>
+      </div>
+    </header>
+
+    <!-- EXECUTIVE SUMMARY -->
+    <div class="summary-row">
+      <div class="summary-card" id="sc-fuel">
+        <div class="sc-label">
+          Fuel Status
+          <span class="help-icon">?<span class="tooltip-card">Volume Fuel ON = วอลุ่มแท่งปัจจุบันมากกว่า SMA20
+              หมายความว่ามีแรงซื้อ/ขายเกินค่าเฉลี่ย สนับสนุนให้ราคาเคลื่อนไหวต่อเนื่อง</span></span>
+        </div>
+        <div class="sc-value" id="sc-fuel-val" aria-live="polite">—</div>
+        <div class="sc-sub" id="sc-fuel-sub">Vol / SMA Ratio</div>
+      </div>
+      <div class="summary-card" id="sc-phase">
+        <div class="sc-label">Volatility Phase</div>
+        <div class="sc-value" id="sc-phase-val" aria-live="polite">—</div>
+        <div class="sc-sub" id="sc-phase-sub">ATR 1W Multiplier</div>
+      </div>
+      <div class="summary-card" id="sc-sd">
+        <div class="sc-label">
+          SD Zone
+          <span class="help-icon">?<span class="tooltip-card">SD Zone บอกว่าราคาอยู่ห่างจากค่ากลางกี่ Sigma
+              ยิ่งสูงยิ่งเสี่ยง: Normal(&lt;1.5σ) → Moderate → Elevated → High Tension(2.6σ) →
+              OVERPRICED(&gt;3σ)</span></span>
+        </div>
+        <div class="sc-value" id="sc-sd-val" aria-live="polite">—</div>
+        <div class="sc-sub" id="sc-sd-sub">Standard Deviation</div>
+      </div>
+      <div class="summary-card" id="sc-boundary">
+        <div class="sc-label">
+          Overpriced Check
+          <span class="help-icon">?<span class="tooltip-card">ตรวจสอบว่าราคาอยู่ในโซน Overpriced หรือยัง โดยเปรียบเทียบ
+              SD Value กับ Boundary ที่ 1.5σ / 2.0σ / 2.6σ / &gt;3.0σ</span></span>
+        </div>
+        <div class="sc-value" id="sc-boundary-val" aria-live="polite">—</div>
+        <div class="sc-sub" id="sc-boundary-sub">Fair / Expensive / Danger</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+
+      <!-- LEFT: INPUTS -->
+      <div>
+        <div class="panel">
+
+          <!-- Form Control Toolbar -->
+          <div class="form-toolbar">
+            <div class="form-toolbar-left">
+              <div class="panel-title" style="margin-bottom:0;border-left:none;padding-left:0">Controls &amp; Inputs
+              </div>
+              <div class="symbol-select-wrap">
+                <span class="symbol-select-label">Symbol</span>
+                <select class="symbol-select" id="symbolSelect" onchange="onSymbolChange()">
+                  <option value="XAUUSD">XAUUSD (ทอง)</option>
+                  <option value="SP500">S&amp;P 500</option>
+                  <option value="BTC">BTC / USD</option>
+                  <option value="CUSTOM">Custom</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-toolbar-right">
+              <button class="btn btn-outline" onclick="saveSymbolPreset()"
+                title="บันทึกค่าสำหรับ Symbol นี้">บันทึก</button>
+              <button class="btn btn-outline" onclick="resetToSample()"
+                title="รีเซ็ตเป็นค่าตัวอย่างมาตรฐาน">รีเซ็ต</button>
+              <button class="btn btn-danger" onclick="clearAllInputs()"
+                title="ล้างค่าในช่อง input ทั้งหมด">ล้าง</button>
+            </div>
+          </div>
+
+          <!-- Section 1: Basic Inputs -->
+          <div class="input-section">
+            <div class="panel-title mb-12">ราคาและปริมาณการซื้อขาย (Basic)</div>
+
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="curPrice">Current Price</label>
+                </div>
+                <div class="input-helper">ราคาปัจจุบันของสินทรัพย์</div>
+                <div class="price-fetch-wrap">
+                  <input type="number" id="curPrice" value="5081" min="0" step="any" placeholder="e.g. 5081">
+                  <button class="btn-fetch-price" id="btnFetchPrice" onclick="fetchPrice()"
+                    title="ดึงราคา BTC อัตโนมัติ (Coinbase API)">ดึงราคา</button>
+                </div>
+                <div class="input-error-msg" id="err-curPrice" role="alert">กรุณากรอกราคาปัจจุบัน (&gt; 0)</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="tgtPrice">Target Price</label>
+                </div>
+                <div class="input-helper">ราคาเป้าหมายที่คาดหวัง</div>
+                <div class="input-wrap"><input type="number" id="tgtPrice" value="5594" min="0" step="any"
+                    placeholder="e.g. 5594"></div>
+                <div class="input-error-msg" id="err-tgtPrice" role="alert">กรุณากรอกราคาเป้าหมาย (≥ 0)</div>
+              </div>
+            </div>
+
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="vol">Current Volume</label>
+                </div>
+                <div class="input-helper">วอลุ่มการซื้อขายแท่งปัจจุบัน</div>
+                <div class="input-wrap"><input type="number" id="vol" value="1500" min="0" step="any"
+                    placeholder="e.g. 1500"></div>
+                <div class="input-error-msg" id="err-vol" role="alert">กรุณากรอก Volume (≥ 0)</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="volSma">Volume SMA</label>
+                </div>
+                <div class="input-helper">วอลุ่มเฉลี่ยย้อนหลัง 20 แท่ง</div>
+                <div class="input-wrap has-unit">
+                  <input type="number" id="volSma" value="1000" min="0.0001" step="any" placeholder="e.g. 1000">
+                  <span class="unit">SMA20</span>
+                </div>
+                <div class="input-error-msg" id="err-volSma" role="alert">ต้องมากกว่า 0 (ตัวหาร)</div>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+            <div class="panel-title mb-12">ค่าความผันผวน (ATR Values)</div>
+
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="atr1d">ATR 1D</label>
+                </div>
+                <div class="input-helper">ความผันผวนเฉลี่ยรายวัน</div>
+                <div class="input-wrap"><input type="number" id="atr1d" value="172" min="0.0001" step="any"
+                    placeholder="e.g. 172"></div>
+                <div class="input-error-msg" id="err-atr1d" role="alert">ATR 1D ต้องมากกว่า 0</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="atr1w">ATR 1W</label>
+                </div>
+                <div class="input-helper">ความผันผวนเฉลี่ยรายสัปดาห์</div>
+                <div class="input-wrap"><input type="number" id="atr1w" value="177.733" min="0.0001" step="any"
+                    placeholder="e.g. 177.73"></div>
+                <div class="input-error-msg" id="err-atr1w" role="alert">ATR 1W ต้องมากกว่า 0</div>
+              </div>
+            </div>
+
+            <div class="input-grid single">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="atr1m">ATR 1M</label>
+                </div>
+                <div class="input-helper">ความผันผวนเฉลี่ยรายเดือน</div>
+                <div class="input-wrap"><input type="number" id="atr1m" value="371.670" min="0.0001" step="any"
+                    placeholder="e.g. 371.67"></div>
+                <div class="input-error-msg" id="err-atr1m" role="alert">ATR 1M ต้องมากกว่า 0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Advanced Inputs (Collapsible) -->
+          <button class="collapsible-trigger" id="advTrigger" onclick="toggleAdvancedSection()" aria-expanded="false"
+            aria-controls="advContent">
+            <span>แสดงตัวเลือกขั้นสูง (Advanced Parameters)</span>
+            <span class="collapsible-arrow">v</span>
+          </button>
+
+          <div class="collapsible-content" id="advContent">
+            <hr class="section-divider">
+            <div class="panel-title mb-12">Standard Deviation &amp; Base Price</div>
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="sdVal">
+                    SD Value (σ)
+                    <span class="help-icon" style="position:static">?<span class="tooltip-card">ค่า SD ที่ใช้คำนวณ
+                        Volatility Extension ยิ่งสูงยิ่งระบุระดับราคาที่ห่างจากค่ากลาง โดยทั่วไปใช้ 2.0 -
+                        2.6σ</span></span>
+                  </label>
+                </div>
+                <div class="input-helper">ค่าเบี่ยงเบนมาตรฐาน (Sigma)</div>
+                <div class="input-wrap"><input type="number" id="sdVal" value="2.0" min="0" step="0.01"
+                    placeholder="e.g. 2.0"></div>
+                <div class="input-error-msg" id="err-sdVal" role="alert">SD Value ต้อง ≥ 0</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="basePrice">Base Price (MA)</label>
+                </div>
+                <div class="input-helper">ราคาฐาน Moving Average</div>
+                <div class="input-wrap"><input type="number" id="basePrice" value="4406" min="0" step="any"
+                    placeholder="e.g. 4406"></div>
+                <div class="input-error-msg" id="err-basePrice" role="alert">Base Price ต้อง ≥ 0</div>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+            <div class="panel-title mb-12">MA Coefficients &amp; Acceleration</div>
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="coeff12ma">MA12 1W Coeff</label>
+                </div>
+                <div class="input-helper">ตัวคูณแนวรับ MA12 รายสัปดาห์</div>
+                <div class="input-wrap"><input type="number" id="coeff12ma" value="0.25" min="0" step="0.001"
+                    placeholder="e.g. 0.25"></div>
+                <div class="input-error-msg" id="err-coeff12ma" role="alert">ต้อง ≥ 0</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="coeff1m">MA12 1M Coeff</label>
+                </div>
+                <div class="input-helper">ตัวคูณแนวรับ MA12 รายเดือน</div>
+                <div class="input-wrap"><input type="number" id="coeff1m" value="0.188" min="0" step="0.001"
+                    placeholder="e.g. 0.188"></div>
+                <div class="input-error-msg" id="err-coeff1m" role="alert">ต้อง ≥ 0</div>
+              </div>
+            </div>
+            <div class="input-grid">
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="accelCoeff">
+                    Accel Coeff (σ)
+                    <span class="help-icon" style="position:static">?<span class="tooltip-card">Momentum Acceleration
+                        Coefficient ควรมากกว่า SD Value เสมอ เพื่อให้ Momentum Level อยู่สูงกว่า Volatility Extension
+                        (เป็น resistance ขั้นถัดไป)</span></span>
+                  </label>
+                </div>
+                <div class="input-helper">ตัวคูณความเร่งโมเมนตัม</div>
+                <div class="input-wrap"><input type="number" id="accelCoeff" value="2.6" min="0" step="0.01"
+                    placeholder="e.g. 2.6"></div>
+                <div class="input-error-msg" id="err-accelCoeff" role="alert">ต้อง ≥ 0</div>
+                <div class="input-warning-msg" id="warn-accelCoeff"
+                  style="font-size:11px;color:var(--amber-text);margin-top:4px;display:none;align-items:center;gap:4px;">
+                  Accel Coeff ควรมากกว่า SD Value เพื่อให้ Momentum Extension ไกลกว่า Volatility Extension</div>
+              </div>
+              <div class="input-group">
+                <div class="input-label-wrap">
+                  <label class="input-label" for="ma12base">MA12 1W Base</label>
+                </div>
+                <div class="input-helper">ราคาฐาน MA12 1W</div>
+                <div class="input-wrap"><input type="number" id="ma12base" value="4461" min="0" step="any"
+                    placeholder="e.g. 4461"></div>
+                <div class="input-error-msg" id="err-ma12base" role="alert">ต้อง ≥ 0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Volume Fuel Status -->
+          <div class="fuel-status-block on mt-16" id="fuelBlock">
+            <div class="fuel-label">
+              Volume Fuel Status
+              <span class="help-icon" style="position:relative;display:inline-flex;margin-left:6px">?<span
+                  class="tooltip-card">ON = วอลุ่มแท่งปัจจุบัน &gt; SMA20 หมายความว่ามีแรงซื้อขายเพิ่ม
+                  สนับสนุนทิศทางราคา | OFF = แรงซื้อขายเบาบาง</span></span>
+            </div>
+            <div class="fuel-value" id="fuelVal" aria-live="polite">High (Fuel ON)</div>
+            <div class="bar-track">
+              <div class="bar-fill" id="fuelBar" style="width:60%;background:var(--emerald)"></div>
+            </div>
+            <div class="bar-labels"><span>0</span><span id="fuelBarLabel">Vol/SMA = 1.50×</span><span>3×</span></div>
+          </div>
+
+        </div>
+
+        <!-- TRADING SIGNAL PANEL -->
+        <div class="panel mt-16" id="tradeSummaryPanel">
+          <div class="panel-title mb-12">Trading Signal Summary</div>
+
+          <div class="trade-signal-box neutral" id="tsSignalBox">
+            <div class="ts-signal-label">สภาวะตลาด &amp; คำแนะนำ</div>
+            <div class="ts-signal-action" id="tsAction" aria-live="polite">BUY</div>
+            <div class="ts-signal-sub" id="tsActionSub">เป้าหมายอยู่สูงกว่าราคาปัจจุบัน</div>
+          </div>
+
+          <div class="ts-metric-list mt-12">
+            <div class="ts-metric-row">
+              <div class="ts-metric-label">ตำแหน่งราคาปัจจุบัน (Price Position)</div>
+              <div class="ts-metric-value" id="tsPriceCompare" aria-live="polite">—</div>
+            </div>
+          </div>
+
+          <!-- Platform Links -->
+          <div class="platform-links-wrap mt-12">
+            <a href="https://www.tradingview.com/chart/" target="_blank" rel="noopener noreferrer"
+              class="btn-platform btn-tradingview" title="เปิดกราฟวิเคราะห์บน TradingView">
+              <svg width="22" height="16" viewBox="0 0 36 27" fill="currentColor" aria-hidden="true">
+                <path d="M14 0H22V27H14V0Z" />
+                <path d="M0 8.5H8V27H0V8.5Z" />
+                <path d="M28 17H36V27H28V17Z" />
+              </svg>
+              <span>เปิดกราฟ TradingView</span>
+            </a>
+
+            <a href="https://trade.mql5.com/trade" target="_blank" rel="noopener noreferrer"
+              class="btn-platform btn-mt5" title="เปิดส่งคำสั่งเทรดบน MetaTrader 5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M3.5 18.5V12.5H7.5V18.5H3.5ZM10 18.5V5.5H14V18.5H10ZM16.5 18.5V9.5H20.5V18.5H16.5Z" />
+              </svg>
+              <span>เปิดเทรดบน MetaTrader 5 (MT5)</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div>
+
+        <!-- Sparkline Price Level Chart -->
+        <div class="panel sparkline-panel">
+          <div class="panel-title">
+            Price Level Gauge — Support &amp; Resistance Visual
+            <span class="help-icon">?<span class="tooltip-card">กราฟแสดงตำแหน่งราคาปัจจุบันเทียบกับระดับ
+                Support/Resistance สำคัญแบบ visual ไม่ต้องอ่านตัวเลขหลายบรรทัด</span></span>
+          </div>
+          <div class="sparkline-wrap">
+            <canvas class="sparkline-canvas" id="sparklineCanvas" height="140"></canvas>
+            <div class="sparkline-legend" id="sparklineLegend">
+              <div class="sparkline-legend-item">
+                <div class="sparkline-legend-dot" style="background:#0284C7"></div>Current Price
+              </div>
+              <div class="sparkline-legend-item">
+                <div class="sparkline-legend-dot" style="background:#10B981"></div>MA12 Support
+              </div>
+              <div class="sparkline-legend-item">
+                <div class="sparkline-legend-dot" style="background:#F43F5E"></div>Vol. Extension
+              </div>
+              <div class="sparkline-legend-item">
+                <div class="sparkline-legend-dot" style="background:#64748B"></div>Mom. Level
+              </div>
+              <div class="sparkline-legend-item">
+                <div class="sparkline-legend-dot" style="background:#F59E0B"></div>Target
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ATR Overview -->
+        <div class="panel mb-12">
+          <div class="panel-title">ATR Timeframe Overview</div>
+          <div class="atr-row">
+            <div class="atr-tf" style="color:var(--blue-dark)">1D</div>
+            <div class="atr-bar-wrap">
+              <div class="atr-bar-track">
+                <div class="atr-bar-fill" id="atrBar1d" style="background:var(--blue-primary)"></div>
+              </div>
+            </div>
+            <div class="atr-val text-blue" id="atrVal1d">—</div>
+          </div>
+          <div class="atr-row">
+            <div class="atr-tf" style="color:var(--emerald-text)">1W</div>
+            <div class="atr-bar-wrap">
+              <div class="atr-bar-track">
+                <div class="atr-bar-fill" id="atrBar1w" style="background:var(--emerald)"></div>
+              </div>
+            </div>
+            <div class="atr-val text-green" id="atrVal1w">—</div>
+          </div>
+          <div class="atr-row">
+            <div class="atr-tf" style="color:var(--amber-text)">1M</div>
+            <div class="atr-bar-wrap">
+              <div class="atr-bar-track">
+                <div class="atr-bar-fill" id="atrBar1m" style="background:var(--amber)"></div>
+              </div>
+            </div>
+            <div class="atr-val text-amber" id="atrVal1m">—</div>
+          </div>
+        </div>
+
+        <!-- Volatility Multiplier -->
+        <div class="panel mb-12">
+          <div class="panel-title">1W ATR Distance Model &amp; Volatility Multiplier</div>
+          <div class="vm-display">
+            <div class="vm-ring" id="vmRing">
+              <div class="vm-ring-val" id="vmVal">—</div>
+              <div class="vm-ring-label">Mult ×</div>
+            </div>
+            <div class="vm-info">
+              <div class="vm-info-row"><span class="vm-info-label">|Target − Current|</span><span class="vm-info-val"
+                  id="vmDiff">—</span></div>
+              <div class="vm-info-row"><span class="vm-info-label">ATR 1W</span><span class="vm-info-val"
+                  id="vmAtr">—</span></div>
+              <div class="vm-info-row"><span class="vm-info-label">Verify Level</span><span class="vm-info-val"
+                  id="vmVerify">—</span></div>
+              <div class="vm-info-row"><span class="vm-info-label">Phase</span><span class="vm-info-val"
+                  id="vmPhase">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MA Dynamic Levels -->
+        <div class="panel mb-12">
+          <div class="panel-title">MA Dynamic Levels — Support / Resistance</div>
+          <div class="level-table-wrap">
+            <table class="level-table">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Formula</th>
+                  <th>Value</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody id="maLevelsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Volatility Extension + Momentum -->
+        <div class="results-grid mb-12">
+
+          <div class="panel">
+            <div class="panel-title">Volatility Extension</div>
+            <div class="result-card mt-8" style="--rc-color:var(--rose)">
+              <div class="rc-label">Extension Level (SD × ATR)</div>
+              <div class="rc-value" id="veVal">—</div>
+              <div class="rc-desc" id="veDesc">Base + (SD × ATR 1D)</div>
+            </div>
+            <div class="result-card mt-8" style="--rc-color:var(--amber)">
+              <div class="rc-label">
+                SD Gauge — Volatility Zone
+                <span class="help-icon">?<span class="tooltip-card">แสดงว่า SD Value ที่กรอกอยู่ในโซนไหน
+                    เข็มชี้ตำแหน่งบน track สีต่างๆ</span></span>
+              </div>
+              <div class="sd-gauge-wrap">
+                <div class="sd-value-display">
+                  <span class="sd-big" id="sdBig">—</span>
+                  <span class="sd-unit">σ</span>
+                </div>
+                <div class="sd-track">
+                  <div class="sd-zones">
+                    <div class="sd-z1"></div>
+                    <div class="sd-z2"></div>
+                    <div class="sd-z3"></div>
+                    <div class="sd-z4"></div>
+                  </div>
+                  <div class="sd-needle" id="sdNeedle" style="left:20%"></div>
+                </div>
+                <div class="sd-labels"><span>1.0</span><span>1.5</span><span>2.0</span><span>2.6</span><span>3+</span>
+                </div>
+              </div>
+              <div id="sdStatusBadge" class="sd-status-badge"
+                style="background:var(--blue-light);color:var(--blue-dark);border-color:var(--blue-border)">Normal Zone
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              Excess Momentum Acceleration
+              <span class="help-icon">?<span class="tooltip-card">Momentum Level = Base Price + (Accel Coefficient × ATR
+                  1D) เป็นระดับ Resistance ถัดไปถ้าราคา breakout Volatility Extension ไปแล้ว</span></span>
+            </div>
+            <div class="momentum-display">
+              <div class="mom-item">
+                <div class="mom-label">Accel Coeff</div>
+                <div class="mom-val" id="momCoeff">—</div>
+              </div>
+              <div class="mom-item">
+                <div class="mom-label">ATR 1D Used</div>
+                <div class="mom-val" id="momAtr">—</div>
+              </div>
+              <div class="mom-item" style="grid-column:1/-1">
+                <div class="mom-label">Momentum Extension</div>
+                <div class="mom-val" id="momExtension" style="font-size:11px;color:var(--text-secondary)">—</div>
+              </div>
+            </div>
+            <div class="result-card mt-8" style="--rc-color:var(--blue-primary)">
+              <div class="rc-label">Momentum Level</div>
+              <div class="rc-value" id="momLevel">—</div>
+              <div class="rc-desc" id="momDesc">Base + (Accel × ATR 1D)</div>
+            </div>
+
+            <div class="panel-title mt-12" style="margin-bottom:0">
+              Overpriced Boundary Check
+              <span class="help-icon">?<span class="tooltip-card">เซลล์ที่ไฮไลต์คือ SD Zone ที่ราคาอยู่ในขณะนี้
+                  ใช้ตรวจสอบว่าราคาเริ่มเข้าโซน Overpriced หรือยัง</span></span>
+            </div>
+            <div class="overpriced-grid" id="opGrid"></div>
+          </div>
+
+        </div><!-- end results-grid -->
+      </div><!-- end right -->
+    </div><!-- end main-grid -->
+
+    <!-- ===== HISTORY LOG ===== -->
+    <div class="history-section">
+      <button class="collapsible-trigger" id="historyTrigger" onclick="toggleSection('historyContent','historyTrigger')"
+        aria-expanded="false">
+        <span>History Log — บันทึกการคัดลอกผลลัพธ์ (<span id="historyCount">0</span> รายการ)</span>
+        <span class="collapsible-arrow">v</span>
+      </button>
+      <div class="collapsible-content" id="historyContent">
+        <div class="panel" style="margin-top:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="panel-title" style="border-left:none;padding-left:0">ประวัติสัญญาณที่คัดลอก</div>
+            <button class="btn btn-danger history-clear-btn" onclick="clearHistory()">ล้างประวัติ</button>
+          </div>
+          <div class="history-table-wrap">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>วันที่/เวลา</th>
+                  <th>Signal</th>
+                  <th>Price</th>
+                  <th>Target</th>
+                  <th>SD Zone</th>
+                  <th>Fuel</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody">
+                <tr>
+                  <td colspan="6" class="history-empty">ยังไม่มีประวัติ — กด "คัดลอกผลลัพธ์" เพื่อเริ่มบันทึก</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== METHODOLOGY ===== -->
+    <div class="methodology-section">
+      <button class="collapsible-trigger" id="methodTrigger" onclick="toggleSection('methodContent','methodTrigger')"
+        aria-expanded="false">
+        <span>วิธีคำนวณ — ที่มาของสูตรแต่ละตัว</span>
+        <span class="collapsible-arrow">v</span>
+      </button>
+      <div class="collapsible-content" id="methodContent">
+        <div class="panel" style="margin-top:12px">
+          <div class="panel-title mb-12">Methodology &amp; Formula Reference</div>
+          <div class="method-grid">
+            <div class="method-card">
+              <div class="method-card-title">Volume Fuel Status <span class="method-card-badge">Vol / SMA20</span></div>
+              <div class="method-card-body">วอลุ่มแท่งปัจจุบันเปรียบเทียบกับค่าเฉลี่ย 20 แท่ง ถ้า Vol &gt; SMA20
+                หมายความว่าตลาดมีแรงซื้อขายเกินค่าปกติ สนับสนุนทิศทางราคา</div>
+              <div class="method-formula">Fuel ON : Vol &gt; Vol_SMA20
+                Ratio : Vol / Vol_SMA20
+                Signal : Ratio &gt; 1.0 → FUEL ON</div>
+            </div>
+            <div class="method-card">
+              <div class="method-card-title">Volatility Multiplier <span class="method-card-badge">ATR 1W
+                  Distance</span></div>
+              <div class="method-card-body">วัดว่าระยะห่างระหว่างราคาปัจจุบันกับเป้าหมายเป็นกี่เท่าของ ATR 1W
+                เพื่อประเมิน "ความไกล" ของเป้าหมายในแง่ Volatility</div>
+              <div class="method-formula">VM = |Target − Current| / ATR_1W
+                &lt; 1x : Low Distance
+                1-2x : Moderate
+                2-3x : High Momentum
+                ≥ 3x : Extreme Extension</div>
+            </div>
+            <div class="method-card">
+              <div class="method-card-title">SD Zone (2.6σ) <span class="method-card-badge">99th Percentile</span></div>
+              <div class="method-card-body">ใช้ 2.6σ เป็น "High Tension" threshold เพราะบน Normal Distribution
+                ราคาที่อยู่ห่างจากค่ากลาง 2.6σ จะเกิดขึ้นน้อยกว่า 1% ของเวลาทั้งหมด — บ่งชี้ภาวะ Overbought/Oversold
+                รุนแรง</div>
+              <div class="method-formula">P(X &gt; 2.6σ) ≈ 0.46% (one-tail)
+                Normal : &lt; 1.5σ
+                Moderate : 1.5 – 2.0σ
+                Elevated : 2.0 – 2.6σ
+                Hi-Tens : 2.6 – 3.0σ
+                Overpriced: &gt; 3.0σ</div>
+            </div>
+            <div class="method-card">
+              <div class="method-card-title">MA12 Coefficient (0.25) <span class="method-card-badge">Empirical
+                  Calibration</span></div>
+              <div class="method-card-body">ค่า Coeff 0.25 ได้จากการ calibrate บนข้อมูล SPX และ XAUUSD ย้อนหลัง —
+                โดยพบว่า MA12 หักออก 0.25 × ATR 1W ให้ระดับ Support ที่ราคามักเด้งกลับจากบริเวณนั้นบ่อยที่สุด</div>
+              <div class="method-formula">MA12_Support_1W = MA12_Base − (0.25 × ATR_1W)
+                MA12_Support_1M = Base_Price − (0.188 × ATR_1M)</div>
+            </div>
+            <div class="method-card">
+              <div class="method-card-title">Volatility Extension <span class="method-card-badge">SD × ATR</span></div>
+              <div class="method-card-body">คำนวณระดับราคา Resistance โดยนำ Base Price บวกด้วย SD Value คูณ ATR 1D
+                เป็นการประมาณว่าราคาจะ "ยืดออก" ไปได้ไกลแค่ไหนในกรอบ Volatility ปัจจุบัน</div>
+              <div class="method-formula">Vol_Extension = Base_Price + (SD × ATR_1D)
+                เช่น: 4406 + (2.0 × 172) = 4750</div>
+            </div>
+            <div class="method-card">
+              <div class="method-card-title">Momentum Acceleration <span class="method-card-badge">Accel × ATR</span>
+              </div>
+              <div class="method-card-body">ระดับ Resistance ถัดไปถ้าราคา Breakout ผ่าน Volatility Extension ไปแล้ว
+                Accel Coeff ควรมากกว่า SD Value เสมอเพื่อให้ Momentum Level อยู่สูงกว่า</div>
+              <div class="method-formula">Mom_Level = Base_Price + (Accel × ATR_1D)
+                Accel (default 2.6) &gt; SD Value (default 2.0)
+                เช่น: 4406 + (2.6 × 172) = 4853.2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><span
+      id="toastMsg">คัดลอกผลลัพธ์สรุปเรียบร้อยแล้ว</span></div>
+
+  <script>
+    const el = id => document.getElementById(id);
+    const fmt = (n, d = 2) => isNaN(n) || !isFinite(n) ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+    const SAMPLE_DEFAULTS = {
+      vol: 1500, volSma: 1000, curPrice: 5081, tgtPrice: 5594,
+      atr1d: 172, atr1w: 177.733, atr1m: 371.670, sdVal: 2.0,
+      basePrice: 4406, coeff12ma: 0.25, coeff1m: 0.188,
+      accelCoeff: 2.6, ma12base: 4461
+    };
+
+    const INPUT_IDS = Object.keys(SAMPLE_DEFAULTS);
+    const STORAGE_KEY = 'atr_analyzer_inputs';
+    const HISTORY_KEY = 'atr_analyzer_history';
+    const DARK_KEY = 'atr_analyzer_dark';
+    const MAX_HISTORY = 50;
+
+    // ===== SD ZONES (single source of truth) =====
+    const SD_ZONES = [
+      { sd: '< 1.5σ', label: 'Normal', color: 'var(--blue-dark)', bg: 'var(--blue-light)', border: 'var(--blue-border)', shadow: 'rgba(2,132,199,0.15)', min: 0, max: 1.5, cardClass: 'active-blue' },
+      { sd: '1.5σ', label: 'Moderate', color: 'var(--emerald-text)', bg: 'var(--emerald-light)', border: 'var(--emerald-border)', shadow: 'rgba(16,185,129,0.15)', min: 1.5, max: 2.0, cardClass: 'active-green' },
+      { sd: '2.0σ', label: 'Elevated', color: 'var(--amber-text)', bg: 'var(--amber-light)', border: 'var(--amber-border)', shadow: 'rgba(245,158,11,0.15)', min: 2.0, max: 2.6, cardClass: 'active-amber' },
+      { sd: '2.6σ', label: 'High Tension', color: 'var(--rose-text)', bg: 'var(--rose-light)', border: 'var(--rose-border)', shadow: 'rgba(244,63,94,0.2)', min: 2.6, max: 3.0, cardClass: 'active-red' },
+      { sd: '>3.0σ', label: 'OVERPRICED', color: 'var(--rose-text)', bg: 'var(--rose-light)', border: 'var(--rose-border)', shadow: 'rgba(244,63,94,0.25)', min: 3.0, max: Infinity, cardClass: 'active-red' }
+    ];
+
+    function getSdZone(sdVal) {
+      if (sdVal >= 3.0) return SD_ZONES[4];
+      if (sdVal >= 2.6) return SD_ZONES[3];
+      if (sdVal >= 2.0) return SD_ZONES[2];
+      if (sdVal >= 1.5) return SD_ZONES[1];
+      return SD_ZONES[0];
+    }
+
+    // ===== DARK MODE =====
+    function applyDark(isDark) {
+      document.documentElement.classList.toggle('dark', isDark);
+      try { localStorage.setItem(DARK_KEY, isDark ? '1' : '0'); } catch (e) { }
+    }
+    function toggleDark() { applyDark(!document.documentElement.classList.contains('dark')); }
+
+    // ===== MULTI-SYMBOL PRESET =====
+    function storageKeyForSymbol(sym) { return 'atr_analyzer_' + sym; }
+
+    function onSymbolChange() {
+      const sym = el('symbolSelect').value;
+      loadSymbolPreset(sym);
+      // Show/hide price fetch button
+      el('btnFetchPrice').style.display = (sym === 'BTC') ? 'flex' : 'none';
+    }
+
+    function saveSymbolPreset() {
+      const sym = el('symbolSelect').value;
+      const key = storageKeyForSymbol(sym);
+      const data = {};
+      INPUT_IDS.forEach(id => { const inp = el(id); if (inp) data[id] = inp.value; });
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+        showToast(`บันทึก preset "${sym}" เรียบร้อยแล้ว`);
+      } catch (e) { showToast('ไม่สามารถบันทึกได้'); }
+    }
+
+    function loadSymbolPreset(sym) {
+      const key = storageKeyForSymbol(sym);
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const data = JSON.parse(saved);
+          INPUT_IDS.forEach(id => { if (data[id] !== undefined && el(id)) el(id).value = data[id]; });
+          compute();
+          showToast(`โหลด preset "${sym}" เรียบร้อยแล้ว`);
+        } else {
+          showToast(`ยังไม่มี preset "${sym}" — กรอกค่าและกด บันทึก`);
+        }
+      } catch (e) { }
+    }
+
+    // ===== LOCAL STORAGE (default persist) =====
+    function saveInputsToStorage() {
+      try {
+        const data = {};
+        INPUT_IDS.forEach(id => { const inp = el(id); if (inp) data[id] = inp.value; });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) { }
+    }
+
+    function restoreInputsFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        let any = false;
+        INPUT_IDS.forEach(id => { if (data[id] !== undefined && el(id)) { el(id).value = data[id]; any = true; } });
+        return any;
+      } catch (e) { return false; }
+    }
+
+    // ===== URL SHARE / RESTORE =====
+    function shareUrl() {
+      const params = new URLSearchParams();
+      INPUT_IDS.forEach(id => { const inp = el(id); if (inp && inp.value) params.set(id, inp.value); });
+      const url = window.location.origin + window.location.pathname + '?' + params.toString();
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('คัดลอก URL พร้อมค่าทั้งหมดแล้ว');
+      }).catch(() => {
+        prompt('คัดลอก URL นี้:', url);
+      });
+    }
+
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      let any = false;
+      INPUT_IDS.forEach(id => {
+        if (params.has(id) && el(id)) { el(id).value = params.get(id); any = true; }
+      });
+      return any;
+    }
+
+    // ===== AUTO PRICE FETCH (BTC via Coinbase) =====
+    async function fetchPrice() {
+      const sym = el('symbolSelect').value;
+      const btn = el('btnFetchPrice');
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        if (sym === 'BTC') {
+          const res = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+          if (!res.ok) throw new Error('API error');
+          const json = await res.json();
+          const price = parseFloat(json.data.amount);
+          if (!isNaN(price)) {
+            el('curPrice').value = price.toFixed(2);
+            compute();
+            showToast(`ดึงราคา BTC: $${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`);
+          }
+        } else {
+          showToast('Auto-fetch รองรับเฉพาะ BTC ในขณะนี้');
+        }
+      } catch (e) {
+        showToast('ไม่สามารถดึงราคาได้ (Network Error)');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'ดึงราคา';
+      }
+    }
+
+    // ===== HISTORY LOG =====
+    function loadHistory() {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function saveHistory(arr) {
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0, MAX_HISTORY))); } catch (e) { }
+    }
+    function logHistory(entry) {
+      const arr = loadHistory();
+      arr.unshift(entry);
+      saveHistory(arr);
+      renderHistory();
+    }
+    function clearHistory() {
+      if (!confirm('ลบประวัติทั้งหมด?')) return;
+      try { localStorage.removeItem(HISTORY_KEY); } catch (e) { }
+      renderHistory();
+      showToast('ล้างประวัติเรียบร้อยแล้ว');
+    }
+    function renderHistory() {
+      const arr = loadHistory();
+      const body = el('historyBody');
+      const count = el('historyCount');
+      if (count) count.textContent = arr.length;
+      if (!arr.length) {
+        body.innerHTML = '<tr><td colspan="6" class="history-empty">ยังไม่มีประวัติ — กด "คัดลอกผลลัพธ์" เพื่อเริ่มบันทึก</td></tr>';
+        return;
+      }
+      const signalClass = s => s.includes('BUY') ? 'hb-buy' : s.includes('SELL') ? 'hb-sell' : 'hb-neutral';
+      body.innerHTML = arr.map(e => `
+      <tr>
+        <td style="color:var(--text-secondary);white-space:nowrap">${e.time}</td>
+        <td><span class="history-badge ${signalClass(e.signal)}">${e.signal}</span></td>
+        <td>${e.price}</td>
+        <td>${e.target}</td>
+        <td style="color:${e.sdColor}">${e.sdZone}</td>
+        <td>${e.fuel}</td>
+      </tr>`).join('');
+    }
+
+    // ===== COLLAPSIBLE GENERIC =====
+    function toggleSection(contentId, triggerId) {
+      const content = el(contentId);
+      const trigger = el(triggerId);
+      const isOpen = content.classList.contains('open');
+      content.classList.toggle('open', !isOpen);
+      trigger.classList.toggle('active', !isOpen);
+      trigger.setAttribute('aria-expanded', (!isOpen).toString());
+    }
+
+    // ===== ADVANCED SECTION =====
+    function toggleAdvancedSection() {
+      const trigger = el('advTrigger');
+      const content = el('advContent');
+      const isOpen = content.classList.contains('open');
+      content.classList.toggle('open', !isOpen);
+      trigger.classList.toggle('active', !isOpen);
+      trigger.setAttribute('aria-expanded', (!isOpen).toString());
+      trigger.querySelector('span').textContent = !isOpen
+        ? 'ซ่อนตัวเลือกขั้นสูง (Advanced Parameters)'
+        : 'แสดงตัวเลือกขั้นสูง (Advanced Parameters)';
+    }
+
+    // ===== RESET / CLEAR =====
+    function resetToSample() {
+      INPUT_IDS.forEach(id => { if (el(id)) el(id).value = SAMPLE_DEFAULTS[id]; });
+      compute(); saveInputsToStorage();
+      showToast('รีเซ็ตเป็นค่าตัวอย่างเรียบร้อยแล้ว');
+    }
+    function clearAllInputs() {
+      INPUT_IDS.forEach(id => { if (el(id)) el(id).value = ''; });
+      compute(); saveInputsToStorage();
+      showToast('ล้างค่าทั้งหมดเรียบร้อยแล้ว');
+    }
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      const toast = el('toast');
+      el('toastMsg').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    // ===== SPARKLINE RENDERER =====
+    function drawSparkline(levels) {
+      const canvas = el('sparklineCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      // Responsive size
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = 140 * dpr;
+      ctx.scale(dpr, dpr);
+      const W = rect.width;
+      const H = 140;
+
+      // Dark mode detect
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#A3A3A3' : '#64748B';
+      const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)';
+      const surfaceColor = isDark ? '#161616' : '#F1F5F9';
+
+      ctx.clearRect(0, 0, W, H);
+
+      if (!levels || levels.length === 0) {
+        ctx.fillStyle = textColor;
+        ctx.font = '12px Kanit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('กรุณากรอกข้อมูลเพื่อแสดงกราฟ', W / 2, H / 2);
+        return;
+      }
+
+      const prices = levels.map(l => l.value);
+      const minVal = Math.min(...prices) * 0.995;
+      const maxVal = Math.max(...prices) * 1.005;
+      const range = maxVal - minVal || 1;
+
+      const toY = v => H - 20 - ((v - minVal) / range) * (H - 40);
+      const pad = 120; // left padding for labels
+
+      // Background
+      ctx.fillStyle = surfaceColor;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, W, H, 8);
+      ctx.fill();
+
+      // Horizontal grid lines (5)
+      for (let i = 0; i <= 4; i++) {
+        const y = 20 + (i / 4) * (H - 40);
+        ctx.beginPath();
+        ctx.strokeStyle = gridColor;
+        ctx.lineWidth = 1;
+        ctx.moveTo(pad, y); ctx.lineTo(W - 10, y);
+        ctx.stroke();
+      }
+
+      // Draw each level
+      levels.forEach(lv => {
+        const y = toY(lv.value);
+
+        // Line
+        ctx.beginPath();
+        ctx.setLineDash(lv.dashed ? [5, 3] : []);
+        ctx.strokeStyle = lv.color;
+        ctx.lineWidth = lv.isCurrent ? 2.5 : 1.5;
+        ctx.globalAlpha = lv.isCurrent ? 1 : 0.75;
+        ctx.moveTo(pad, y); ctx.lineTo(W - 10, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+
+        // Label bg
+        const labelText = lv.label;
+        const valueText = fmt(lv.value);
+
+        ctx.fillStyle = lv.isCurrent ? lv.color : (isDark ? '#262626' : '#FFFFFF');
+        ctx.beginPath();
+        ctx.roundRect(2, y - 10, pad - 4, 18, 4);
+        ctx.fill();
+
+        // Label text
+        ctx.fillStyle = lv.isCurrent ? '#FFFFFF' : lv.color;
+        ctx.font = `${lv.isCurrent ? '600' : '500'} 10px Kanit, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText(labelText, 6, y + 3);
+
+        // Value text on right
+        ctx.font = '500 10px Kanit, JetBrains Mono, monospace';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = lv.color;
+        ctx.fillText(valueText, W - 12, y - 3);
+
+        // Dot for current price
+        if (lv.isCurrent) {
+          ctx.beginPath();
+          ctx.arc(pad + 16, y, 5, 0, Math.PI * 2);
+          ctx.fillStyle = lv.color;
+          ctx.fill();
+          ctx.strokeStyle = isDark ? '#111111' : '#FFFFFF';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+    }
+
+    // ===== VALIDATION =====
+    function validateAllInputs() {
+      let isValid = true;
+      const checkField = (id, minVal, allowZero = false) => {
+        const inputEl = el(id);
+        const errEl = el('err-' + id);
+        const valStr = inputEl ? inputEl.value.trim() : '';
+        const numVal = parseFloat(valStr);
+        let fieldValid = true;
+        if (valStr === '' || isNaN(numVal)) {
+          fieldValid = false;
+        } else if (allowZero ? numVal < minVal : numVal <= minVal) {
+          fieldValid = false;
+        }
+        if (inputEl) {
+          inputEl.classList.toggle('input-invalid', !fieldValid);
+          if (errEl) errEl.classList.toggle('show', !fieldValid);
+        }
+        if (!fieldValid) isValid = false;
+        return numVal;
+      };
+      const curPrice = checkField('curPrice', 0, false);
+      const tgtPrice = checkField('tgtPrice', 0, true);
+      const vol = checkField('vol', 0, true);
+      const volSma = checkField('volSma', 0, false);
+      const atr1d = checkField('atr1d', 0, false);
+      const atr1w = checkField('atr1w', 0, false);
+      const atr1m = checkField('atr1m', 0, false);
+      const sdVal = checkField('sdVal', 0, true);
+      const basePrice = checkField('basePrice', 0, true);
+      const c12ma = checkField('coeff12ma', 0, true);
+      const c1m = checkField('coeff1m', 0, true);
+      const accel = checkField('accelCoeff', 0, true);
+      const ma12base = checkField('ma12base', 0, true);
+      return { isValid, vals: { vol, volSma, curPrice, tgtPrice, atr1d, atr1w, atr1m, sdVal, basePrice, c12ma, c1m, accel, ma12base } };
+    }
+
+    // ===== MAIN COMPUTE =====
+    function compute() {
+      const { isValid, vals } = validateAllInputs();
+      const { vol, volSma, curPrice, tgtPrice, atr1d, atr1w, atr1m, sdVal, basePrice, c12ma, c1m, accel, ma12base } = vals;
+
+      if (!isValid) {
+        window.__lastComputed = { isValid: false };
+        el('fuelBlock').className = 'fuel-status-block invalid';
+        el('fuelVal').textContent = 'Invalid Input';
+        el('fuelBar').style.width = '0%';
+        el('fuelBarLabel').textContent = '—';
+        el('sc-fuel').className = 'summary-card invalid-state';
+        el('sc-fuel-val').textContent = 'ERROR';
+        el('sc-fuel-val').style.color = 'var(--rose-text)';
+        el('sc-fuel-sub').textContent = 'Check Input Fields';
+        el('sc-phase').className = 'summary-card invalid-state';
+        el('sc-phase-val').textContent = '—';
+        el('sc-phase-sub').textContent = 'Check Input Fields';
+        el('sc-sd').className = 'summary-card invalid-state';
+        el('sc-sd-val').textContent = '—';
+        el('sc-sd-sub').textContent = 'Check Input Fields';
+        el('sc-boundary').className = 'summary-card invalid-state';
+        el('sc-boundary-val').textContent = '—';
+        el('sc-boundary-sub').textContent = 'Check Input Fields';
+        el('atrVal1d').textContent = '—'; el('atrVal1w').textContent = '—'; el('atrVal1m').textContent = '—';
+        el('vmVal').textContent = '—'; el('vmDiff').textContent = '—'; el('vmAtr').textContent = '—';
+        el('vmVerify').textContent = '—'; el('vmPhase').textContent = '—';
+        el('maLevelsBody').innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--rose-text);padding:16px;font-weight:400">กรุณากรอกข้อมูลใน Input ให้ถูกต้องก่อนคำนวณ</td></tr>`;
+        el('veVal').textContent = '—'; el('veDesc').textContent = '—'; el('sdBig').textContent = '—';
+        el('momCoeff').textContent = '—'; el('momAtr').textContent = '—';
+        el('momExtension').textContent = '—'; el('momLevel').textContent = '—';
+        el('opGrid').innerHTML = '';
+        el('tsSignalBox').className = 'trade-signal-box neutral';
+        el('tsAction').textContent = '—';
+        el('tsActionSub').textContent = 'กรุณากรอกข้อมูลใน Input ให้ถูกต้อง';
+        el('tsPriceCompare').textContent = '—';
+        drawSparkline([]);
+        return;
+      }
+
+      // Accel warning
+      const warnAccel = el('warn-accelCoeff');
+      if (warnAccel) {
+        if (accel <= sdVal) {
+          warnAccel.style.display = 'flex';
+          warnAccel.textContent = `Accel Coeff (${accel.toFixed(2)}σ) ≤ SD Value (${sdVal.toFixed(2)}σ) — Momentum Level ควรสูงกว่า Volatility Extension`;
+        } else { warnAccel.style.display = 'none'; }
+      }
+
+      /* 1. VOLUME FUEL */
+      const isFuelOn = vol > volSma;
+      const volRatio = volSma > 0 ? vol / volSma : 0;
+      const barPct = clamp((volRatio / 3) * 100, 0, 100);
+      el('fuelBlock').className = 'fuel-status-block ' + (isFuelOn ? 'on' : 'off');
+      el('fuelVal').textContent = isFuelOn ? 'High (Fuel ON)' : 'Low (Fuel OFF)';
+      el('fuelBar').style.width = barPct + '%';
+      el('fuelBar').style.background = isFuelOn ? 'var(--emerald)' : 'var(--slate)';
+      el('fuelBarLabel').textContent = 'Vol/SMA = ' + volRatio.toFixed(2) + '×';
+      el('sc-fuel').className = 'summary-card ' + (isFuelOn ? 'active-green' : '');
+      el('sc-fuel-val').textContent = isFuelOn ? 'FUEL ON' : 'FUEL OFF';
+      el('sc-fuel-val').style.color = isFuelOn ? 'var(--emerald-text)' : 'var(--text-secondary)';
+      el('sc-fuel-sub').textContent = 'Vol/SMA = ' + volRatio.toFixed(2) + '×';
+
+      /* 2. ATR OVERVIEW */
+      const maxAtr = Math.max(atr1d, atr1w, atr1m) || 1;
+      el('atrVal1d').textContent = fmt(atr1d, 3);
+      el('atrVal1w').textContent = fmt(atr1w, 3);
+      el('atrVal1m').textContent = fmt(atr1m, 3);
+      el('atrBar1d').style.width = clamp((atr1d / maxAtr) * 100, 5, 100) + '%';
+      el('atrBar1w').style.width = clamp((atr1w / maxAtr) * 100, 5, 100) + '%';
+      el('atrBar1m').style.width = clamp((atr1m / maxAtr) * 100, 5, 100) + '%';
+
+      /* 3. VOLATILITY MULTIPLIER */
+      const priceDiff = Math.abs(tgtPrice - curPrice);
+      const vm = atr1w > 0 ? priceDiff / atr1w : 0;
+      const vmVerify = curPrice + (vm * atr1w);
+      el('vmDiff').textContent = fmt(priceDiff);
+      el('vmAtr').textContent = fmt(atr1w, 3);
+      el('vmVal').textContent = vm.toFixed(3);
+      el('vmVerify').textContent = fmt(vmVerify);
+
+      let vmPhase, vmColor;
+      if (vm < 1) { vmPhase = 'Low Distance'; vmColor = 'var(--slate)'; }
+      else if (vm < 2) { vmPhase = 'Moderate'; vmColor = 'var(--blue-dark)'; }
+      else if (vm < 3) { vmPhase = 'High Momentum'; vmColor = 'var(--amber-text)'; }
+      else { vmPhase = 'Extreme Extension'; vmColor = 'var(--rose-text)'; }
+
+      el('vmPhase').textContent = vmPhase;
+      el('vmPhase').style.color = vmColor;
+      el('vmVal').style.color = vmColor;
+      el('vmRing').style.borderColor = vmColor;
+      el('vmRing').style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+      el('sc-phase-val').textContent = vm.toFixed(2) + '×';
+      el('sc-phase-val').style.color = vmColor;
+      el('sc-phase-sub').textContent = vmPhase;
+      el('sc-phase').className = 'summary-card ' + (vm >= 3 ? 'active-red' : vm >= 2 ? 'active-amber' : vm >= 1 ? 'active-blue' : '');
+
+      /* 4. MA DYNAMIC LEVELS */
+      const ma12_1w_sup = ma12base - (c12ma * atr1w);
+      const ma12_1m_sup = basePrice - (c1m * atr1m);
+      const veLevel = basePrice + (sdVal * atr1d);
+      const momLevel = basePrice + (accel * atr1d);
+
+      const levels = [
+        { name: 'MA12 1W Support', formula: `${fmt(ma12base)} − (${fmt(c12ma, 3)} × ${fmt(atr1w, 3)})`, val: ma12_1w_sup, type: 'Support', color: 'var(--emerald-text)', badgeBg: 'var(--emerald-light)', badgeFg: 'var(--emerald-text)' },
+        { name: 'MA12 1M Support', formula: `${fmt(basePrice)} − (${fmt(c1m, 3)} × ${fmt(atr1m, 3)})`, val: ma12_1m_sup, type: 'Support', color: 'var(--emerald-text)', badgeBg: 'var(--emerald-light)', badgeFg: 'var(--emerald-text)' },
+        { name: 'Vol. Extension', formula: `${fmt(basePrice)} + (${fmt(sdVal, 2)}σ × ${fmt(atr1d, 3)})`, val: veLevel, type: 'Resistance', color: 'var(--rose-text)', badgeBg: 'var(--rose-light)', badgeFg: 'var(--rose-text)' },
+        { name: 'Mom. Acceleration', formula: `${fmt(basePrice)} + (${fmt(accel, 2)} × ${fmt(atr1d, 3)})`, val: momLevel, type: 'Resistance', color: 'var(--text-primary)', badgeBg: 'var(--bg-subtle)', badgeFg: 'var(--text-primary)' },
+      ];
+      el('maLevelsBody').innerHTML = levels.map(lv => `<tr>
+      <td><span class="level-dot" style="background:${lv.color}"></span>${lv.name}</td>
+      <td style="font-size:12px;color:var(--text-secondary)">${lv.formula}</td>
+      <td style="color:${lv.color};font-weight:500">${fmt(lv.val)}</td>
+      <td><span class="level-type-badge" style="background:${lv.badgeBg};color:${lv.badgeFg};border:1px solid rgba(0,0,0,0.05)">${lv.type}</span></td>
+    </tr>`).join('');
+
+      /* 5. VOLATILITY EXTENSION */
+      el('veVal').textContent = fmt(veLevel);
+      el('veDesc').textContent = `${fmt(basePrice)} + (${fmt(sdVal, 2)}σ × ${fmt(atr1d, 3)}) = ${fmt(veLevel)}`;
+
+      /* 6. SD GAUGE */
+      el('sdBig').textContent = sdVal.toFixed(2);
+      const sdPct = clamp(((sdVal - 1.0) / (3.5 - 1.0)) * 100, 0, 100);
+      el('sdNeedle').style.left = sdPct + '%';
+
+      const currentSdZone = getSdZone(sdVal);
+      const sdStatus = `${currentSdZone.label} (${currentSdZone.sd})`;
+      const badge = el('sdStatusBadge');
+      badge.textContent = sdStatus;
+      badge.style.background = currentSdZone.bg;
+      badge.style.borderColor = currentSdZone.border;
+      badge.style.color = currentSdZone.color;
+      el('sc-sd-val').textContent = sdVal.toFixed(2) + 'σ';
+      el('sc-sd-val').style.color = currentSdZone.color;
+      el('sc-sd-sub').textContent = sdStatus;
+      el('sc-sd').className = 'summary-card ' + currentSdZone.cardClass;
+
+      /* 7. MOMENTUM */
+      const momExt = accel * atr1d;
+      el('momCoeff').textContent = fmt(accel, 2) + '×';
+      el('momAtr').textContent = fmt(atr1d, 3);
+      el('momExtension').textContent = `${fmt(basePrice)} + (${fmt(accel, 2)} × ${fmt(atr1d, 3)}) = ${fmt(basePrice)} + ${fmt(momExt)}`;
+      el('momLevel').textContent = fmt(momLevel);
+      el('momDesc').textContent = `Acceleration Extension: +${fmt(momExt)}`;
+
+      /* 8. OVERPRICED GRID */
+      const gridZones = SD_ZONES.slice(1);
+      el('opGrid').innerHTML = gridZones.map(z => {
+        const active = (z.sd === currentSdZone.sd);
+        return `<div class="op-cell ${active ? 'active-zone' : ''}" ${active ? `style="--zone-color:${z.color};--zone-bg:${z.bg};--zone-shadow:${z.shadow}"` : ''}>
+        <div class="op-active-indicator"></div>
+        <div class="op-cell-sd" style="color:${active ? z.color : 'var(--text-secondary)'}">${z.sd}</div>
+        <div class="op-cell-label">${z.label}</div>
+      </div>`;
+      }).join('');
+      el('sc-boundary-val').textContent = currentSdZone.sd;
+      el('sc-boundary-val').style.color = currentSdZone.color;
+      el('sc-boundary-sub').textContent = currentSdZone.label;
+      el('sc-boundary').className = 'summary-card ' + currentSdZone.cardClass;
+
+      /* 9. TRADING SIGNAL */
+      const deadzone = 0.05 * atr1d;
+      const isOverpriced = sdVal >= 3.0;
+      const isNeutral = Math.abs(tgtPrice - curPrice) <= deadzone && !isOverpriced;
+      const isBuy = tgtPrice > curPrice && !isNeutral && !isOverpriced;
+
+      let actionText = '';
+      if (isOverpriced) {
+        el('tsSignalBox').className = 'trade-signal-box sell';
+        el('tsAction').textContent = 'SELL (ฝั่งขาย / ทำกำไร)';
+        el('tsActionSub').textContent = 'สภาวะราคา Overpriced (>3.0σ) ควรระวังการย่อตัว';
+        actionText = 'SELL (ฝั่งขาย / ทำกำไร)';
+      } else if (isNeutral) {
+        el('tsSignalBox').className = 'trade-signal-box neutral';
+        el('tsAction').textContent = 'NEUTRAL (รอสัญญาณ)';
+        el('tsActionSub').textContent = `ราคาอยู่ในกรอบสมดุล (|Target − Current| ≤ ${fmt(deadzone, 2)} [5% ของ ATR 1D])`;
+        actionText = 'NEUTRAL (รอสัญญาณ)';
+      } else if (isBuy) {
+        el('tsSignalBox').className = 'trade-signal-box buy';
+        el('tsAction').textContent = 'BUY (ฝั่งซื้อ)';
+        el('tsActionSub').textContent = 'เป้าหมายอยู่สูงกว่าราคาปัจจุบัน และราคายังไม่สูงเกินไป';
+        actionText = 'BUY (ฝั่งซื้อ)';
+      } else {
+        el('tsSignalBox').className = 'trade-signal-box sell';
+        el('tsAction').textContent = 'SELL (ฝั่งขาย / ทำกำไร)';
+        el('tsActionSub').textContent = 'ราคาปัจจุบันอยู่สูงกว่าราคาเป้าหมาย';
+        actionText = 'SELL (ฝั่งขาย / ทำกำไร)';
+      }
+
+      let priceCompStr = '';
+      if (curPrice > basePrice)
+        priceCompStr = `ราคา (${fmt(curPrice)}) > Base Price (${fmt(basePrice)}) [+${fmt(curPrice - basePrice)}]`;
+      else if (curPrice < basePrice)
+        priceCompStr = `ราคา (${fmt(curPrice)}) < Base Price (${fmt(basePrice)}) [-${fmt(basePrice - curPrice)}]`;
+      else
+        priceCompStr = `ราคา (${fmt(curPrice)}) = Base Price (${fmt(basePrice)})`;
+      el('tsPriceCompare').textContent = priceCompStr;
+
+      /* 10. SPARKLINE */
+      const sparkLevels = [
+        { label: 'MA12 1W Sup', value: ma12_1w_sup, color: '#10B981', dashed: true, isCurrent: false },
+        { label: 'MA12 1M Sup', value: ma12_1m_sup, color: '#34D399', dashed: true, isCurrent: false },
+        { label: 'Base Price', value: basePrice, color: '#94A3B8', dashed: true, isCurrent: false },
+        { label: 'Target', value: tgtPrice, color: '#F59E0B', dashed: false, isCurrent: false },
+        { label: 'Current', value: curPrice, color: '#0284C7', dashed: false, isCurrent: true },
+        { label: 'Vol. Ext.', value: veLevel, color: '#F43F5E', dashed: false, isCurrent: false },
+        { label: 'Mom. Level', value: momLevel, color: '#64748B', dashed: true, isCurrent: false },
+      ].sort((a, b) => a.value - b.value);
+      drawSparkline(sparkLevels);
+
+      // Cache
+      window.__lastComputed = {
+        isValid: true, vals, results: {
+          isFuelOn, volRatio, vmPhase, vm, sdVal, sdStatus, veLevel, momLevel,
+          ma12_1w_sup, ma12_1m_sup, actionText, priceCompStr, currentSdZone
+        }
+      };
+    }
+
+    // ===== COPY RESULTS =====
+    function copyResults() {
+      const state = window.__lastComputed;
+      if (!state || !state.isValid) { showToast('ไม่สามารถคัดลอกได้ เนื่องจากข้อมูลใน Input ไม่ถูกต้อง'); return; }
+
+      const { vals, results } = state;
+      const { curPrice, tgtPrice } = vals;
+      const { isFuelOn, volRatio, vmPhase, vm, sdVal, sdStatus, veLevel, momLevel, ma12_1w_sup, ma12_1m_sup, actionText, priceCompStr, currentSdZone } = results;
+
+      const summaryText = `Quantitative & Volume Fuel Analyzer Summary
+=============================================
+คำแนะนำการเทรด (Signal): ${actionText}
+ตำแหน่งราคา: ${priceCompStr}
+
+ลิงก์แพลตฟอร์มวิเคราะห์และเทรด:
+▪️ TradingView: https://www.tradingview.com/chart/
+▪️ MetaTrader 5 (MT5): https://trade.mql5.com/trade
+
+ข้อมูลสถิติเพิ่มเติม:
+▪️ Current Price: ${fmt(curPrice)} | Target Price: ${fmt(tgtPrice)}
+▪️ Volume Fuel Status: ${isFuelOn ? 'High (Fuel ON)' : 'Low (Fuel OFF)'} (Ratio: ${volRatio.toFixed(2)}x)
+▪️ Volatility Phase: ${vmPhase} (${vm.toFixed(2)}x ATR 1W)
+▪️ SD Zone: ${sdVal.toFixed(2)}σ [${sdStatus}]
+▪️ Volatility Extension: ${fmt(veLevel)}
+▪️ Momentum Level: ${fmt(momLevel)}
+
+MA Dynamic Support / Resistance:
+ ├─ MA12 1W Support: ${fmt(ma12_1w_sup)}
+ ├─ MA12 1M Support: ${fmt(ma12_1m_sup)}
+ ├─ Volatility Extension (Resistance): ${fmt(veLevel)}
+ └─ Momentum Acceleration (Resistance): ${fmt(momLevel)}
+=============================================
+Generated on: ${new Date().toLocaleString('th-TH')}`;
+
+      navigator.clipboard.writeText(summaryText).then(() => {
+        showToast('คัดลอกผลลัพธ์สรุปเรียบร้อยแล้ว');
+        // Log to history
+        const signalShort = actionText.includes('BUY') ? 'BUY' : actionText.includes('SELL') ? 'SELL' : 'NEUTRAL';
+        logHistory({
+          time: new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }),
+          signal: signalShort,
+          price: fmt(curPrice),
+          target: fmt(tgtPrice),
+          sdZone: sdStatus,
+          sdColor: currentSdZone ? currentSdZone.color : 'inherit',
+          fuel: isFuelOn ? 'ON' : 'OFF'
+        });
+      }).catch(() => showToast('ไม่สามารถคัดลอกได้ (Clipboard Permission Error)'));
+    }
+
+    // ===== INPUT LISTENERS =====
+    INPUT_IDS.forEach(id => {
+      const inp = el(id);
+      if (inp) {
+        inp.addEventListener('input', () => { compute(); saveInputsToStorage(); });
+      }
+    });
+
+    // Sparkline re-render on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { if (window.__lastComputed && window.__lastComputed.isValid) compute(); }, 200);
+    });
+
+    // ===== INITIALISE =====
+    (function init() {
+      // Dark mode
+      try {
+        const savedDark = localStorage.getItem(DARK_KEY);
+        if (savedDark === '1') applyDark(true);
+      } catch (e) { }
+
+      // Show fetch button only for BTC
+      el('btnFetchPrice').style.display = 'none';
+
+      // Restore from URL first, then localStorage
+      const fromUrl = loadFromUrl();
+      if (!fromUrl) restoreInputsFromStorage();
+
+      // Render history count
+      renderHistory();
+
+      compute();
+    })();
+  </script>
+</body>
+
+</html>
